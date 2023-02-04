@@ -10,3 +10,25 @@
     <h1>Chat-ws</h1>
 </body>
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let socket = new WebSocket("ws://localhost:8000/ws")
+
+        socket.onopen = function (event) {
+           console.log("Connection is open")
+        }
+
+        socket.onmessage = function (event) {
+            console.log("Message from server: ", event.data)
+        }
+
+        socket.onerror = function (error) {
+            console.error("Websocket error: ", event.error)
+        }
+
+        socket.onclose = function (event) {
+            console.log("WebSocket closed with code: ", event.code);
+        };
+    })
+</script>
