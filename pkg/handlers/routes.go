@@ -3,7 +3,8 @@ package handlers
 import "github.com/gin-gonic/gin"
 
 func InitRoutes() *gin.Engine {
-	routes := gin.Default()
+	routes := gin.New()
+	routes.LoadHTMLGlob("html/*")
 
 	routes.GET("/", HomePage)
 
