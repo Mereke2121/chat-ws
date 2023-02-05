@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat WS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" 
-    rel="stylesheet" 
-    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" 
-    crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 </head>
+
 <body>
     <div class="row">
         <div class="col">
@@ -53,17 +53,16 @@
         </div>
     </div>
 </body>
+
 </html>
 
 <script>
+    let userField = document.getElementById("username")
+
     let socket = new WebSocket("ws://localhost:8000/ws")
 
     socket.onopen = function (event) {
-       console.log("Connection is open")
-    }
-
-    socket.onmessage = function (event) {
-        console.log("Message from server: ", event.data)
+        console.log("Connection is open")
     }
 
     socket.onerror = function (error) {
@@ -72,5 +71,18 @@
 
     socket.onclose = function (event) {
         console.log("WebSocket closed with code: ", event.code);
-    };
+    }
+
+    socket.onmessage = function (event) {
+        console.log("Message from server: ", event.data)
+    }
+
+    userField.addEventListener("change", function() {
+        console.log(this.value)
+        let jsonData = {}
+        jsonData["message_type"] = "username"
+        jsonData["username"] = this.value
+        socket.send(JSON.stringify(jsonData))
+        this.value = ""
+    })
 </script>
