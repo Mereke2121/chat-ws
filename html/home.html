@@ -5,30 +5,72 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat WS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" 
+    crossorigin="anonymous">
 </head>
 <body>
-    <h1>Chat-ws</h1>
+    <div class="row">
+        <div class="col">
+            <h1 class="mt-3">This is the home page</h1>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Chat</h3>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" name="username" id="username" class="form-control" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <input type="text" name="message" id="message" class="form-control" autocomplete="off">
+            </div>
+
+            <hr>
+            <a class="btn btn-outline-success" id="sendBtn">Send Message</a>
+
+            <input type="hidden" name="action" id="action">
+
+            <div id="status" class="mt-2 float-end">
+                <div></div>
+            </div>
+
+            <div id="output" class="chatbox mt-3">
+
+            </div>
+
+        </div>
+        <div class="col-md-4">
+            <h3>Who's Online</h3>
+
+            <ul id="online_users">
+
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let socket = new WebSocket("ws://localhost:8000/ws")
+    let socket = new WebSocket("ws://localhost:8000/ws")
 
-        socket.onopen = function (event) {
-           console.log("Connection is open")
-        }
+    socket.onopen = function (event) {
+       console.log("Connection is open")
+    }
 
-        socket.onmessage = function (event) {
-            console.log("Message from server: ", event.data)
-        }
+    socket.onmessage = function (event) {
+        console.log("Message from server: ", event.data)
+    }
 
-        socket.onerror = function (error) {
-            console.error("Websocket error: ", event.error)
-        }
+    socket.onerror = function (error) {
+        console.error("Websocket error: ", event.error)
+    }
 
-        socket.onclose = function (event) {
-            console.log("WebSocket closed with code: ", event.code);
-        };
-    })
+    socket.onclose = function (event) {
+        console.log("WebSocket closed with code: ", event.code);
+    };
 </script>
