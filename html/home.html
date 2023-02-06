@@ -58,6 +58,7 @@
 
 <script>
     let userField = document.getElementById("username")
+    let onlineUsersField = document.getElementById("online_users")
 
     let socket = new WebSocket("ws://localhost:8000/ws")
 
@@ -74,7 +75,13 @@
     }
 
     socket.onmessage = function (event) {
-        console.log("Message from server: ", event.data)
+        let data = JSON.parse(event.data)
+        console.log(data)
+        if (data.type === "username") {
+            for (let i = 0; i < data.users.length; i++) {
+                onlineUsersField.innerHTML += `<li>${data.users[i]}</li>`
+            }
+        }
     }
 
     userField.addEventListener("change", function() {
