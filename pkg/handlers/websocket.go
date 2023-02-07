@@ -10,19 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type WsResponse struct {
-	Type     string   `json:"type"`
-	Message  string   `json:"message"`
-	UserName string   `json:"username"`
-	Users    []string `json:"users"`
-}
-
-type WsPayload struct {
-	MessageType string `json:"message_type"`
-	Username    string `json:"username"`
-	Message     string `json:"message"`
-}
-
 var users = make(map[*websocket.Conn]string)
 
 func WsConnection(c *gin.Context) {
@@ -37,7 +24,7 @@ func WsConnection(c *gin.Context) {
 		return
 	}
 
-	msg := WsResponse{
+	msg := utils.WsMessageResponse{
 		Message: "Websocket connected",
 	}
 	conn.WriteJSON(msg)
@@ -47,23 +34,27 @@ func WsConnection(c *gin.Context) {
 
 func ListenWS(c *gin.Context, conn *websocket.Conn) {
 	for {
-		var payload WsPayload
+		var payload utils.WsPayload
 		err := conn.ReadJSON(&payload)
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
 			return
 		}
-		if payload.MessageType == utils.UsernameType {
+		switch payload.MessageType {
+		case utils.UsernameType: // добавляем user-a
 			users[conn] = payload.Username
-			listUsers := getAllUsers()
-			response := WsResponse{
+			listUsers := getAllUsers(users)
+			response := utils.WsUserResponse{
 				Type:  utils.UsernameType,
 				Users: listUsers,
 			}
-			conn.WriteJSON(response)
-		} else if payload.MessageType == utils.MessageType {
+			if err := conn.WriteJSON(response); err != nil {
+				c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		case utils.MessageType: // отправляем message в чат
 			message := fmt.Sprintf("<strong>%s</strong>: %s", payload.Username, payload.Message)
-			response := WsResponse{
+			response := utils.WsMessageResponse{
 				UserName: payload.Username,
 				Type:     utils.MessageType,
 				Message:  message,
@@ -78,7 +69,7 @@ func ListenWS(c *gin.Context, conn *websocket.Conn) {
 	}
 }
 
-func getAllUsers() []string {
+func getAllUsers(users map[*websocket.Conn]string) []string {
 	var result []string
 	for _, user := range users {
 		result = append(result, user)
