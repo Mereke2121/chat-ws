@@ -68,7 +68,12 @@ func ListenWS(c *gin.Context, conn *websocket.Conn) {
 				Type:     utils.MessageType,
 				Message:  message,
 			}
-			conn.WriteJSON(response)
+			for user := range users {
+				if err := user.WriteJSON(response); err != nil {
+					c.AbortWithError(http.StatusInternalServerError, err)
+					return
+				}
+			}
 		}
 	}
 }
