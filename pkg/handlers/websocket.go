@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"go/src/github.com/chat-ws/utils"
@@ -10,9 +11,10 @@ import (
 )
 
 type WsResponse struct {
-	Type    string   `json:"type"`
-	Message string   `json:"message"`
-	Users   []string `json:"users"`
+	Type     string   `json:"type"`
+	Message  string   `json:"message"`
+	UserName string   `json:"username"`
+	Users    []string `json:"users"`
 }
 
 type WsPayload struct {
@@ -57,6 +59,14 @@ func ListenWS(c *gin.Context, conn *websocket.Conn) {
 			response := WsResponse{
 				Type:  utils.UsernameType,
 				Users: listUsers,
+			}
+			conn.WriteJSON(response)
+		} else if payload.MessageType == utils.MessageType {
+			message := fmt.Sprintf("<strong>%s</strong>: %s", payload.Username, payload.Message)
+			response := WsResponse{
+				UserName: payload.Username,
+				Type:     utils.MessageType,
+				Message:  message,
 			}
 			conn.WriteJSON(response)
 		}

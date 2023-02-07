@@ -60,6 +60,7 @@
     let userField = document.getElementById("username")
     let messageField = document.getElementById("message")
     let onlineUsersField = document.getElementById("online_users")
+    let outputField = document.getElementById("output")
 
     let socket = new WebSocket("ws://localhost:8000/ws")
 
@@ -83,6 +84,8 @@
             for (let i = 0; i < data.users.length; i++) {
                 onlineUsersField.innerHTML += `<li>${data.users[i]}</li>`
             }
+        } else if (data.type === "message") {
+            outputField.innerHTML += data.message + "<br>"
         }
     }
 
@@ -95,20 +98,19 @@
         jsonData["message_type"] = "username"
         jsonData["username"] = this.value
         socket.send(JSON.stringify(jsonData))
-        this.value = ""
     })
 
-    // messageField.addEventListener("change", function() {
-    //     if (this.value === "" || userField.value === "") {
-    //         return
-    //     }
-    //     console.log(this.value)
-    //     let jsonData = {}
-    //     jsonData["message_type"] = "message"
-    //     jsonData["message"] = this.value
-    //     jsonData["username"] = userField.value
-    //     socket.send(JSON.stringify(jsonData))
-    //     this.value = ""
-    // })
+    messageField.addEventListener("change", function() {
+        if (this.value === "" || userField.value === "") {
+            return
+        }
+        console.log(this.value)
+        let jsonData = {}
+        jsonData["message_type"] = "message"
+        jsonData["message"] = this.value
+        jsonData["username"] = userField.value
+        socket.send(JSON.stringify(jsonData))
+        this.value = ""
+    })
 
 </script>
